@@ -16,15 +16,15 @@ phases:
       - echo "=== 构建Docker镜像 ==="
       - echo "生成Dockerfile..."
       - cat > Dockerfile << EOF
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-COPY index.js ./
-RUN npm ci --only=production
-EXPOSE 3000
-USER node
-CMD ["node", "index.js"]
-EOF
+       FROM node:18-alpine
+       WORKDIR /app
+       COPY package*.json ./
+       COPY index.js ./
+       RUN npm ci --only=production
+       EXPOSE 3000
+       USER node
+       CMD ["node", "index.js"]
+       EOF
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
 
