@@ -4,13 +4,15 @@ phases:
   pre_build:
     commands:
       - echo "=== 设置ECR目的地 ==="
+pre_build:
+    commands:
       - ECR_URI=420933050007.dkr.ecr.ap-south-1.amazonaws.com/zt-charts
       - IMAGE_TAG=build-$(date +%Y%m%d-%H%M%S)
       - echo "目的地: $ECR_URI"
       - echo "镜像标签: $IMAGE_TAG"
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_URI
 
-  build:
+build:
     commands:
       - echo "=== 构建Docker镜像 ==="
       - echo "生成Dockerfile..."
@@ -24,11 +26,13 @@ phases:
         EXPOSE 3000
         USER node
         CMD ["node", "index.js"]
-EOF
+        EOF
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
 
-  post_build:
+      - docker build -t $ECR_URI:$IMAGE_TAG .
+      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+post_build:
     commands:
       - echo "=== 推送到ECR ==="
       - docker push $ECR_URI:$IMAGE_TAG
