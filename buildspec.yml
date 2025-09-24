@@ -20,14 +20,14 @@ phases:
       - echo "ECR URI: $ECR_URI"
       - echo "镜像标签: $IMAGE_TAG"
       - echo "正在登录ECR..."
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 420933050007.dkr.ecr.ap-south-1.amazonaws.com
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_URI
 
   build:
     commands:
       - echo "构建阶段开始"
       - echo "创建Dockerfile..."
       - |
-        cat << EOF > Dockerfile
+        cat <<EOF > Dockerfile
 FROM node:18-alpine
 WORKDIR /app
 COPY package*.json ./
