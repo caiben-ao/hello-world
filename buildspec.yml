@@ -26,9 +26,8 @@ build:
         EOF
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+      - echo "镜像构建完成"
 
-      - docker build -t $ECR_URI:$IMAGE_TAG .
-      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
 post_build:
     commands:
       - echo "=== 推送到ECR ==="
