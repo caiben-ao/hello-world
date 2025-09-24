@@ -8,23 +8,24 @@ phases:
       - IMAGE_TAG=build-$(date +%Y%m%d-%H%M%S)
       - echo "目的地: $ECR_URI"
       - echo "镜像标签: $IMAGE_TAG"
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_URI
+      - echo "开始ECR登录..."
+      - aws ecr get-login-password --region ap-south-1 > /tmp/ecr_password
+      - docker login --username AWS --password-stdin 420933050007.dkr.ecr.ap-south-1.amazonaws.com < /tmp/ecr_password
 
   build:
     commands:
       - echo "=== 构建Docker镜像 ==="
       - echo "生成Dockerfile..."
-      - |
-        cat > Dockerfile <<EOF
-        FROM node:18-alpine
-        WORKDIR /app
-        COPY package*.json ./
-        COPY index.js ./
-        RUN npm ci --only=production
-        EXPOSE 3000
-        USER node
-        CMD ["node", "index.js"]
-        EOF
+      - cat > Dockerfile << EOF
+       FROM node:18-alpine
+       WORKDIR /app
+       COPY package*.json ./
+       COPY index.js ./
+       RUN npm ci --only=production
+       EXPOSE 3000
+       USER node
+       CMD ["node", "index.js"]
+       EOF
       - echo "查看生成的Dockerfile:"
       - cat Dockerfile
       - echo "开始构建Docker镜像..."
