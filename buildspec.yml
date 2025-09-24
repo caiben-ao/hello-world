@@ -26,15 +26,16 @@ phases:
     commands:
       - echo "构建阶段开始"
       - echo "创建Dockerfile..."
-      - cat << EOF > Dockerfile
-       FROM node:18-alpine
-       WORKDIR /app
-       COPY package*.json ./
-       RUN npm install
-       COPY index.js ./
-       EXPOSE 3000
-       CMD ["node", "index.js"]
-       EOF
+      - |
+        cat << EOF > Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY index.js ./
+EXPOSE 3000
+CMD ["node", "index.js"]
+EOF
       - echo "构建Docker镜像..."
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
