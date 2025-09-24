@@ -3,55 +3,34 @@ version: 0.2
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
-    ECR_REPOSITORY: "zt-charts"
     ECR_URI: "420933050007.dkr.ecr.ap-south-1.amazonaws.com/zt-charts"
 
 phases:
   install:
     runtime-versions:
       nodejs: 18
-    commands:
-      - echo "安装阶段开始..."
 
   pre_build:
     commands:
-      - echo "预构建阶段开始"
-      - IMAGE_TAG=version-$(date +%Y%m%d-%H%M%S)-$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - echo "ECR URI: $ECR_URI"
-      - echo "镜像标签: $IMAGE_TAG"
-      - echo "正在登录ECR..."
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_URI
+      - IMAGE_TAG=build-$(date +%Y%m%d-%H%M%S)
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 420933050007.dkr.ecr.ap-south-1.amazonaws.com
 
   build:
     commands:
-      - echo "构建阶段开始"
-      - echo "创建Dockerfile..."
-      - |
-        cat <<EOF > Dockerfile
+      - cat > Dockerfile << EOF
 FROM node:18-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
 COPY index.js ./
+RUN npm install
 EXPOSE 3000
 CMD ["node", "index.js"]
 EOF
-      - echo "构建Docker镜像..."
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
 
   post_build:
     commands:
-      - echo "后构建阶段开始"
-      - echo "推送镜像到ECR..."
       - docker push $ECR_URI:$IMAGE_TAG
       - docker push $ECR_URI:latest
-      - echo "✅ 构建成功完成!"
-      - echo "📦 镜像地址: $ECR_URI:$IMAGE_TAG"
-      - echo "🔖 最新标签: $ECR_URI:latest"
-
-artifacts:
-  files:
-    - "Dockerfile"
-    - "**/*"
-  base-directory: .
+      - echo "构建完成: $ECR_URI:$IMAGE_TAG"
