@@ -3,6 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_DEFAULT_REGION: "ap-south-1"
+    ECR_REGISTRY: "420933050007.dkr.ecr.ap-south-1.amazonaws.com"
     ECR_URI: "420933050007.dkr.ecr.ap-south-1.amazonaws.com/zt-charts"
 
 phases:
@@ -13,7 +14,8 @@ phases:
   pre_build:
     commands:
       - IMAGE_TAG=build-$(date +%Y%m%d-%H%M%S)
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 420933050007.dkr.ecr.ap-south-1.amazonaws.com
+      - echo "登录ECR注册表: $ECR_REGISTRY"
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
   build:
     commands:
@@ -24,12 +26,13 @@ phases:
       - echo "COPY index.js ./" >> Dockerfile
       - echo "RUN npm install" >> Dockerfile
       - echo "EXPOSE 3000" >> Dockerfile
-      - echo 'CMD ["node", "index.js"]' >> Dockerfile
+      - echo "CMD [\"node\", \"index.js\"]" >> Dockerfile
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
 
   post_build:
     commands:
+      - echo "推送镜像到ECR"
       - docker push $ECR_URI:$IMAGE_TAG
       - docker push $ECR_URI:latest
       - echo "完成: $ECR_URI:$IMAGE_TAG"
