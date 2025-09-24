@@ -20,8 +20,7 @@ phases:
       - echo "ECR URI: $ECR_URI"
       - echo "镜像标签: $IMAGE_TAG"
       - echo "正在登录ECR..."
-      - login_command=$(aws ecr get-login-password --region $AWS_DEFAULT_REGION)
-      - echo "$login_command" | docker login --username AWS --password-stdin $ECR_URI
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 420933050007.dkr.ecr.ap-south-1.amazonaws.com
 
   build:
     commands:
