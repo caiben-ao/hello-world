@@ -1,7 +1,6 @@
 version: 0.2
 
-phases:
-  pre_build:
+pre_build:
     commands:
       - echo "=== 设置ECR目的地 ==="
       - ECR_URI=420933050007.dkr.ecr.ap-south-1.amazonaws.com/zt-charts
