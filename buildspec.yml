@@ -8,32 +8,36 @@ phases:
       - IMAGE_TAG=build-$(date +%Y%m%d-%H%M%S)
       - echo "目的地: $ECR_URI"
       - echo "镜像标签: $IMAGE_TAG"
-      - echo "开始ECR登录..."
-      - $(aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 420933050007.dkr.ecr.ap-south-1.amazonaws.com)
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_URI
 
-  build:
+build:
     commands:
       - echo "=== 构建Docker镜像 ==="
       - echo "生成Dockerfile..."
-      - cat > Dockerfile << EOF
-       FROM node:18-alpine
-       WORKDIR /app
-       COPY package*.json ./
-       COPY index.js ./
-       RUN npm ci --only=production
-       EXPOSE 3000
-       USER node
-       CMD ["node", "index.js"]
-       EOF
+      - |
+        cat > Dockerfile <<EOF
+        FROM node:18-alpine
+        WORKDIR /app
+        COPY package*.json ./
+        COPY index.js ./
+        RUN npm ci --only=production
+        EXPOSE 3000
+        USER node
+        CMD ["node", "index.js"]
+        EOF
       - docker build -t $ECR_URI:$IMAGE_TAG .
       - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
 
-  post_build:
+      - docker build -t $ECR_URI:$IMAGE_TAG .
+      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+post_build:
     commands:
       - echo "=== 推送到ECR ==="
       - docker push $ECR_URI:$IMAGE_TAG
       - docker push $ECR_URI:latest
       - echo "✅ 构建完成!"
+      - echo "📦 镜像地址: $ECR_URI:$IMAGE_TAG"
+      - echo "⏰ 构建时间: $(date)"
 
 env:
   variables:
