@@ -26,6 +26,6 @@ phases:
 
   post_build:
     commands:
-      - docker push $ECR_URI:nodejs
       - docker push $ECR_URI:$IMAGE_TAG
+      - docker push $ECR_URI:nodejs
       - echo "构建完成"
