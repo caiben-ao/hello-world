@@ -18,7 +18,7 @@ phases:
       - echo "WORKDIR /app" >> Dockerfile
       - echo "COPY package*.json ./" >> Dockerfile
       - echo "COPY index.js ./" >> Dockerfile
-      - echo "RUN npm install" >> Dockerfile
+      - echo "RUN npm install express@^4.18.0" >> Dockerfile
       - echo "EXPOSE 3000" >> Dockerfile
       - echo "CMD [\"node\", \"index.js\"]" >> Dockerfile
       - docker build -t $ECR_URI:$IMAGE_TAG .
