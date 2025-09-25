@@ -22,7 +22,7 @@ phases:
       - echo "EXPOSE 3000" >> Dockerfile
       - echo "CMD [\"node\", \"index.js\"]" >> Dockerfile
       - docker build -t $ECR_URI:$IMAGE_TAG .
-      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:nodejs
 
   post_build:
     commands:
