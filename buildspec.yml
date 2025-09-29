@@ -9,7 +9,7 @@ phases:
     commands:
       - ECR_REGISTRY="420933050007.dkr.ecr.ap-south-1.amazonaws.com"
       - ECR_URI="420933050007.dkr.ecr.ap-south-1.amazonaws.com/zt-charts"
-      - IMAGE_TAG="build-$(date +%Y%m%d-%H%M%S)"
+      - IMAGE_TAG="nodejs-app-$(date +%Y%m%d-%H%M%S)"
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
   build:
@@ -17,16 +17,14 @@ phases:
       - echo "FROM node:18-alpine" > Dockerfile
       - echo "WORKDIR /app" >> Dockerfile
       - echo "COPY package*.json ./" >> Dockerfile
-      - echo "COPY index.js ./" >> Dockerfile
-      - echo "RUN npm install express@^4.18.0" >> Dockerfile
-      - echo "RUN node -e \"require('pg'); console.log('✅ pg模块安装成功')\"" >> Dockerfile  # ✅ 验证pg模块
+      - echo "COPY app.js ./" >> Dockerfile
+      - echo "RUN npm install" >> Dockerfile
+      - echo "RUN node -e \"require('pg'); console.log('✅ pg模块安装成功')\"" >> Dockerfile
       - echo "EXPOSE 3000" >> Dockerfile
-      - echo "CMD [\"node\", \"index.js\"]" >> Dockerfile
+      - echo "CMD [\"node\", \"app.js\"]" >> Dockerfile
       - docker build -t $ECR_URI:$IMAGE_TAG .
-      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:nodejs-app
 
   post_build:
     commands:
       - docker push $ECR_URI:$IMAGE_TAG
-      - docker push $ECR_URI:nodejs-app
-      - echo "构建完成"
+      - echo "构建完成，镜像标签: $IMAGE_TAG"
