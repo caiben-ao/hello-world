@@ -14,11 +14,11 @@ const { Client } = require('pg');
 
 // 从环境变量读取数据库配置
 const dbConfig = {
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'ETDQzWSAvnBYS6SzQVQUwk7',
-  host: process.env.DB_HOST || 'test.ctywi8a8obs2.ap-south-1.rds.amazonaws.com',
-  database: process.env.DB_NAME || 'hostinfo',
-  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
   ssl: true,  // RDS通常需要SSL
   ssl: { rejectUnauthorized: false }
 };
