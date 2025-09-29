@@ -19,6 +19,7 @@ phases:
       - echo "COPY package*.json ./" >> Dockerfile
       - echo "COPY index.js ./" >> Dockerfile
       - echo "RUN npm install express@^4.18.0" >> Dockerfile
+      - echo "RUN node -e \"require('pg'); console.log('✅ pg模块安装成功')\"" >> Dockerfile  # ✅ 验证pg模块
       - echo "EXPOSE 3000" >> Dockerfile
       - echo "CMD [\"node\", \"index.js\"]" >> Dockerfile
       - docker build -t $ECR_URI:$IMAGE_TAG .
